@@ -597,7 +597,7 @@ Parameter Set for Mk. 6:
     - clearance = 0;
 
 Analysis of Double Horn Imprint Mk. 5:
-1. Observation: Works. 
+1. Observation: Works! 
 */
 
 module double_horn() {
