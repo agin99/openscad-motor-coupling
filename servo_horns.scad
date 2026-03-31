@@ -180,7 +180,7 @@ Analysis of Single Horn Imprint Mk. 5:
     >> Mk. 6: 0
 
 ==== Single Horn Imprint Mk. 6: ====
-Parameter Set for Mk. 5: 
+Parameter Set for Mk. 6: 
     - total_horn_len = 21.5; // from measurement
     - horn_crown_d = 7;
     - horn_len = total_horn_len - horn_crown_d / 2; // measured from center of crown
@@ -201,7 +201,6 @@ Analysis of Single Horn Imprint Mk. 6:
 
 ***** Fastener and Screw Hole Separation *****
 
-==== Single Horn Imprint Mk. 7: ====
 1. Observation: horn_len and horn_len_to_last are improperly named and rely on a measured value that
     should be extracted to it's own value. 
 > Fix: Add parameter len_to_last which is the measured distance from the farside of the crown to the 
@@ -213,21 +212,160 @@ Analysis of Single Horn Imprint Mk. 6:
         -> len_to_last = 19.5;
         -> center_to_end = total_horn_len - horn_crown_d / 2;
         -> center_to_last = len_to_last - horn_crown_d / 2;
+
+2. Observation: The separation between the crown and first screw hole is different than
+    the others which requires another measured parameter to properly adjust the start 
+    point of the screw holes. 
+> Fix: Add parameter len_to_first which measures the distance from the edge of the far edge
+    of the crown to the center of the first hole. 
+
+3. Its worth noting the reasoning for why I base my measurements starting at crown edge.
+    The reasoning is that I find it easier to use the edge of the crown as a sturdy base
+    when extending out my digital caliper to take a measurement. Also, since I already 
+    know the crown diameter with reasonable accuracy (via measurement and build success)
+    the computations for center-to-position isn't difficult. 
+
+4. Observation: Even though I haven't been using the parameter screw_r thus far because 
+    I'm only now working on the screw holes, screw_r is better as screw_d because of the 
+    nature of mN screw naming conventions. 
+> Fix: Change screw_r to screw_d
+
+==== Single Horn Imprint Mk. 7: ====
+Parameter Set for Mk. 7: 
+    - total_horn_len = 21.5; // from measurement
+    - len_to_last = 19.5; // from measuremnt
+    - len_to_first = 8; // from measurement
+    - horn_crown_d = 7; // from measurement
+    - center_to_end = total_horn_len - horn_crown_d / 2; // measured from center of crown
+    - center_to_last = len_to_last - horn_crown_d / 2; // measured from center of crown
+    - center_to_first = len_to_first - horn_crown_d / 2;
+    - horn_min_width = 4;
+    - horn_max_width = horn_crown_d;
+    - horn_crown_height = 4.75;
+    - horn_depth = 2;
+    - hole_d = 1;
+    - hole_count = 7;
+    - hole_separation = 2;
+    - screw_d = 2;
+    - screw_l = 20;
+
+Analysis of Single Horn Imprint Mk. 7:
+1. Observation: Unfortunately, the tools at my disposal are not capable of printing
+    and measuring a hole with 1mm diameter! That being said, I usually use M2 screws 
+    when coupling my servos so I'm going to use less screw holes, but places in such a 
+    way that if they switch arbitrarily, without needing readjustment its a good sign 
+    that the holes are properly placed and spaced. 
+> Fix: Use a step size of two in the for loop i = [1: 2 : hole_count - 1] and render 
+    three holes with diameter of 2mm each. 
+    >> Mk. 7: hole_d = 1
+    >> Mk. 8: hole_d = 2
+
+==== Single Horn Imprint Mk. 8: ====
+Parameter Set for Mk. 8: 
+    - total_horn_len = 21.5; // from measurement
+    - len_to_last = 19.5; // from measuremnt
+    - len_to_first = 8; // from measurement
+    - horn_crown_d = 7; // from measurement
+    - center_to_end = total_horn_len - horn_crown_d / 2; // measured from center of crown
+    - center_to_last = len_to_last - horn_crown_d / 2; // measured from center of crown
+    - center_to_first = len_to_first - horn_crown_d / 2;
+    - horn_min_width = 4;
+    - horn_max_width = horn_crown_d;
+    - horn_crown_height = 4.75;
+    - horn_depth = 2;
+    - hole_d = 2;
+    - hole_count = 7;
+    - hole_separation = 2;
+    - screw_d = 2;
+    - screw_l = 20;
+
+
+Analysis of Single Horn Imprint Mk. 8:
+1. Observation: Screw holes are properly spaced, however they're uniformly not far along 
+    enough the horn mold. 
+> Possible Responsible Metric: len_to_first
+> Fix: Double checking measurement, it's possible len_to_first is 8.5mm instead of 8mm
+    >> Mk. 8: len_to_first = 8
+    >> Mk. 9: len_to_first = 8.5
+
+==== Single Horn Imprint Mk. 9: ====
+Parameter Set for Mk. 9: 
+    - total_horn_len = 21.5; // from measurement
+    - len_to_last = 19.5; // from measuremnt
+    - len_to_first = 8.5; // from measurement
+    - horn_crown_d = 7; // from measurement
+    - center_to_end = total_horn_len - horn_crown_d / 2; // measured from center of crown
+    - center_to_last = len_to_last - horn_crown_d / 2; // measured from center of crown
+    - center_to_first = len_to_first - horn_crown_d / 2;
+    - horn_min_width = 4;
+    - horn_max_width = horn_crown_d;
+    - horn_crown_height = 4.75;
+    - horn_depth = 2;
+    - hole_d = 2;
+    - hole_count = 7;
+    - hole_separation = 2;
+    - screw_d = 2;
+    - screw_l = 20;
+
+Analysis of Single Horn Imprint Mk. 9:
+1. Observation: The software predicted position of the screw hole on the horn is 11
+    while the hole. 
+> Possible Responsible Metric:
+    >> len_to_last - it might be that the best method for hole plotting would be 
+        starting from the end and moving inward. Measured against recorded 19.5, 
+        I measured a possible len_to_last of 20
+    >> len_to_first - 8 and 8.5 both don't sufficiently align screw holes. The screws
+        are capable of threading through but they're tilted as they do so indicating 
+        an incorrect line up. 
+> Fix: Start from the last screw hole and plot inward instead of inward to outward. 
+    >> Mk. 9: len_to_last = 19.5
+    >> Mk. 10: len_to_last = 20
+        for (i = [hole_count - 2: -2 : 0]) {
+            echo(center_to_last - i * hole_separation);
+            translate([center_to_last - i * hole_separation, 0, 0])
+                cylinder(d = hole_d, h = screw_l, center = true);
+        }
+
+==== Single Horn Imprint Mk. 10: ====
+Parameter Set for Mk. 10: 
+    - total_horn_len = 21.5; // from measurement
+    - len_to_last = 20; // from measuremnt
+    - len_to_first = 8.5; // from measurement
+    - horn_crown_d = 7; // from measurement
+    - center_to_end = total_horn_len - horn_crown_d / 2; // measured from center of crown
+    - center_to_last = len_to_last - horn_crown_d / 2; // measured from center of crown
+    - center_to_first = len_to_first - horn_crown_d / 2;
+    - horn_min_width = 4;
+    - horn_max_width = horn_crown_d;
+    - horn_crown_height = 4.75;
+    - horn_depth = 2;
+    - hole_d = 2;
+    - hole_count = 7;
+    - hole_separation = 2;
+    - screw_d = 2;
+    - screw_l = 20;
+
+Analysis of Single Horn Imprint Mk. 10:
+1. Observation: Works!
 */
 
 module single_horn() {
     total_horn_len = 21.5; // from measurement
-    len_to_last = 19.5; // from measuremnt
+    len_to_last = 20; // from measuremnt
+    len_to_first = 8.5;
     horn_crown_d = 7;
     center_to_end = total_horn_len - horn_crown_d / 2; // measured from center of crown
     center_to_last = len_to_last - horn_crown_d / 2; // measured from center of crown
+    center_to_first = len_to_first - horn_crown_d / 2;
     horn_min_width = 4;
     horn_max_width = horn_crown_d;
     horn_crown_height = 4.75;
     horn_depth = 2;
-    hole_d = 1;
+    hole_d = 2;
+    hole_count = 7;
     hole_separation = 2;
-    screw_r = 2;
+    screw_d = 2;
+    screw_l = 20;
 
     clearance = 0;
     m = (horn_min_width - horn_max_width) / (2 * center_to_last);
@@ -242,6 +380,13 @@ module single_horn() {
     linear_extrude(horn_depth)
         polygon(concat(top_slope, reverse(bottom_slope)));
     cylinder(d = b, h = horn_crown_height, center = true);
+
+    for (i = [hole_count - 2: -2 : 0]) {
+        echo(center_to_last - i * hole_separation);
+        translate([center_to_last - i * hole_separation, 0, 0])
+            cylinder(d = hole_d, h = screw_l, center = true);
+    }
+    cylinder(d = horn_crown_d, h = screw_l, center = true);
 }
 
 module single_horn_imprint() {
@@ -256,7 +401,7 @@ module single_horn_imprint() {
     horn_depth = 2;
     hole_d = 1;
     hole_separation = 2;
-    screw_r = 2;
+    screw_d = 2;
 
     difference() {
         translate([horn_crown_d, 0, 0])
@@ -444,7 +589,7 @@ module double_horn() {
     horn_depth = 2; // from measurement
     hole_d = 1;
     hole_separation = 2;
-    screw_r = 2;
+    screw_d = 2;
     clearance = 0;
 
     m = (horn_min_width - horn_closest_hole_width) / (2 * closest_to_farthest_distance);
@@ -483,7 +628,7 @@ module double_horn_imprint() {
     horn_depth = 2;
     hole_d = 1;
     hole_separation = 2;
-    screw_r = 2;
+    screw_d = 2;
     clearance = 0;
 
     difference() {
@@ -574,6 +719,7 @@ Analysis of Cross Horn Imprint Mk. 1:
         ];
 
 ==== Cross Horn Imprint Mk. 2: ====
+Parameter Set for Mk. 2:
     > Fat horn (replicate single horn values)
         - total_horn_len = 21.5; // from measurement
         - len_to_last = 19.5; // from measuremnt
@@ -626,6 +772,7 @@ Analysis of Cross Horn Imprint Mk. 2:
     > Mk. 3: 17.5
 
 ==== Cross Horn Imprint Mk. 3: ====
+Parameter Set for Mk. 3:
     > Fat horn (replicate single horn values)
         - total_horn_len = 21.5; // from measurement
         - len_to_last = 19.5; // from measuremnt
@@ -671,6 +818,124 @@ Analysis of Cross Horn Imprint Mk. 2:
     - mold_length = total_horn_len + horn_crown_d
     - mold_width = 17.5
 
+Analysis of Cross Horn Imprint Mk. 3:
+1. Observation: The extended mold of the straights horns seemed to consistently be too short on one
+    side.
+> Reason: Measuring the distance from the final circle to the edge of both sides shows that one straight horn 
+    is longer than the other. Checking this difference in length against a few other cross horns that I have
+    in my stock, this is empirically true.
+> Fix: Account for the separate lengths measured to be a 0.5mm difference. This requires an update to the polygon 
+    drawing as in the previous fixes for skinny horn.
+
+2. Observation: To make this overall system more generalizable I should update the fat horn to take in the extra
+    value that is usually truncated to better precision when using different dimensioned servo horns. 
+> Fix: Same fixes done for observation 1.
+
+==== Cross Horn Imprint Mk. 4: ====
+Parameter Set for Mk. 4:
+    > Fat horn (replicate single horn values)
+        - total_horn_len = 21.5; // from measurement
+        - len_to_last = 19.5; // from measuremnt
+        - horn_crown_d = 7;
+        - center_to_end = total_horn_len - horn_crown_d / 2; // measured from center of crown
+        - center_to_last = len_to_last - horn_crown_d / 2; // measured from center of crown
+        - horn_min_width = 4;
+        - horn_max_width = horn_crown_d;
+        - horn_crown_height = 4.75;
+        - horn_depth = 2;
+        - hole_d = 1;
+        - hole_separation = 2;
+        - screw_r = 2;
+    > Skinny horn
+        - total_horn_len = 19; // from derivation - far edge of crown to edge of skinny horn
+        - len_to_last = 17.5; // from measuremnt
+        - horn_crown_d = 7;
+        - center_to_end = total_horn_len - horn_crown_d / 2; // measured from center of crown
+        - center_to_last = len_to_last - horn_crown_d / 2; // measured from center of crown
+        - horn_min_width = 4; // from measurement
+        - horn_closest_hole_width = 5.5; // from measurement
+        - closest_to_farthest_distance = 10; // from measurement
+        - horn_crown_height = 4.75; // from measurement
+        - horn_depth = 2; // from measurement
+        - hole_d = 1;
+        - hole_separation = 2;
+        - screw_r = 2;
+        - clearance = 0;
+    > Straight horns
+        - total_horn_len = 11.5 (short), 12 (long); // from measurement
+        - len_to_last = 9.5; // from measuremnt
+        - horn_crown_d = 7;
+        - center_to_end = total_horn_len - horn_crown_d / 2; // measured from center of crown
+        - center_to_last = len_to_last - horn_crown_d / 2; // measured from center of crown
+        - horn_min_width = 3.75;
+        - horn_max_width = 3.75;
+        - horn_crown_height = 4.75;
+        - horn_depth = 2;
+        - hole_d = 1;
+        - hole_separation = 2;
+        - screw_r = 2;
+        - clearance = 0;
+    - mold_length = total_horn_len + horn_crown_d
+    - mold_width = 17.5
+
+Analysis of Cross Horn Imprint Mk. 4:
+1. Observation: Snapped in significantly easier than Mk. 3 but the mold cube is thin
+    enough at the edge of the longer straight horn so the horn may have just 'broken out'
+    instead of properly snapping in. 
+> Fix: Extend the cube mold base outward. 
+    >> Mk. 4: 17.5
+    >> Mk. 5: 20
+
+==== Cross Horn Imprint Mk. 5: ====
+Parameter Set for Mk. 5:
+    > Fat horn (replicate single horn values)
+        - total_horn_len = 21.5; // from measurement
+        - len_to_last = 19.5; // from measuremnt
+        - horn_crown_d = 7;
+        - center_to_end = total_horn_len - horn_crown_d / 2; // measured from center of crown
+        - center_to_last = len_to_last - horn_crown_d / 2; // measured from center of crown
+        - horn_min_width = 4;
+        - horn_max_width = horn_crown_d;
+        - horn_crown_height = 4.75;
+        - horn_depth = 2;
+        - hole_d = 1;
+        - hole_separation = 2;
+        - screw_r = 2;
+    > Skinny horn
+        - total_horn_len = 19; // from derivation - far edge of crown to edge of skinny horn
+        - len_to_last = 17.5; // from measuremnt
+        - horn_crown_d = 7;
+        - center_to_end = total_horn_len - horn_crown_d / 2; // measured from center of crown
+        - center_to_last = len_to_last - horn_crown_d / 2; // measured from center of crown
+        - horn_min_width = 4; // from measurement
+        - horn_closest_hole_width = 5.5; // from measurement
+        - closest_to_farthest_distance = 10; // from measurement
+        - horn_crown_height = 4.75; // from measurement
+        - horn_depth = 2; // from measurement
+        - hole_d = 1;
+        - hole_separation = 2;
+        - screw_r = 2;
+        - clearance = 0;
+    > Straight horns
+        - total_horn_len = 11.5 (short), 12 (long); // from measurement
+        - len_to_last = 9.5; // from measuremnt
+        - horn_crown_d = 7;
+        - center_to_end = total_horn_len - horn_crown_d / 2; // measured from center of crown
+        - center_to_last = len_to_last - horn_crown_d / 2; // measured from center of crown
+        - horn_min_width = 3.75;
+        - horn_max_width = 3.75;
+        - horn_crown_height = 4.75;
+        - horn_depth = 2;
+        - hole_d = 1;
+        - hole_separation = 2;
+        - screw_r = 2;
+        - clearance = 0;
+    - mold_length = total_horn_len + horn_crown_d
+    - mold_width = 20
+
+Analysis of Cross Horn Imprint Mk. 5:
+1. Observation: Snap fit!
+
 ***** Fastener and Screw Hole Separation *****
 
 
@@ -687,17 +952,22 @@ module fat_horn() {
     horn_depth = 2;
     hole_d = 1;
     hole_separation = 2;
-    screw_r = 2;
+    screw_d = 2;
 
     clearance = 0;
     m = (horn_min_width - horn_max_width) / (2 * center_to_last);
     b = horn_crown_d + clearance;
     
-    top_slope = [for (x = [0 : center_to_end]) [x, m*x + b / 2]];
-    
+    top_slope = [
+        for (x = [0 : center_to_end]) [x, m*x + b / 2], 
+        [center_to_end, m * center_to_end + b / 2]
+    ];
+    bottom_slope = [
+        for (x = [0 : center_to_end]) [x, -m*x - b / 2], 
+        [center_to_end, -m * center_to_end - b / 2]
+    ];
     function reverse(v) = let(max = len(v) - 1) 
         [ for (i = [0 : max]) v[max - i] ];
-    bottom_slope = [for (x = [0 : center_to_end]) [x, -m*x - b / 2]];
 
     linear_extrude(horn_depth)
         polygon(concat(top_slope, reverse(bottom_slope)));
@@ -717,7 +987,7 @@ module skinny_horn() {
     horn_depth = 2; // from measurement
     hole_d = 1;
     hole_separation = 2;
-    screw_r = 2;
+    screw_d = 2;
     clearance = 0;
 
     m = (horn_min_width - horn_closest_hole_width) / (2 * closest_to_farthest_distance);
@@ -731,7 +1001,6 @@ module skinny_horn() {
         for (x = [0 : center_to_end]) [x, -m*x - b / 2], 
         [center_to_end, -m * center_to_end - b / 2]
     ];
-    
     function reverse(v) = let(max = len(v) - 1) 
         [ for (i = [0 : max]) v[max - i] ];
 
@@ -740,11 +1009,11 @@ module skinny_horn() {
     cylinder(d = b, h = horn_crown_height, center = true);
 }
 
-module straight_horn() {
+module straight_horn(center_to_end) {
     total_horn_len = 11.5; // from measurement
     len_to_last = 9.5; // from measuremnt
     horn_crown_d = 7;
-    center_to_end = total_horn_len - horn_crown_d / 2; // measured from center of crown
+    //center_to_end = total_horn_len - horn_crown_d / 2; // measured from center of crown
     center_to_last = len_to_last - horn_crown_d / 2; // measured from center of crown
     horn_min_width = 3.75;
     horn_max_width = 3.75;
@@ -752,14 +1021,19 @@ module straight_horn() {
     horn_depth = 2;
     hole_d = 1;
     hole_separation = 2;
-    screw_r = 2;
+    screw_d = 2;
     clearance = 0;
     
-    top_slope = [for (x = [0 : center_to_end]) [x, horn_min_width / 2]];
-    
+    top_slope = [
+        for (x = [0 : center_to_end]) [x, horn_min_width / 2], 
+        [center_to_end, horn_min_width / 2]
+    ];
+    bottom_slope = [
+        for (x = [0 : center_to_end]) [x, -horn_min_width / 2], 
+        [center_to_end, -horn_min_width / 2]
+    ];
     function reverse(v) = let(max = len(v) - 1)
         [ for (i = [0 : max]) v[max - i] ];
-    bottom_slope = [for (x = [0 : center_to_end]) [x, -horn_min_width / 2]];
 
     linear_extrude(horn_depth)
         polygon(concat(top_slope, reverse(bottom_slope)));
@@ -778,7 +1052,7 @@ module cross_horn() {
     horn_depth = 2;
     hole_d = 1;
     hole_separation = 2;
-    screw_r = 2;
+    screw_d = 2;
     clearance = 0;
 
     rotate([0, 0, 180])
@@ -786,9 +1060,9 @@ module cross_horn() {
     rotate([0, 0, 0])            
         skinny_horn();
     rotate([0, 0, 90])            
-        straight_horn();
+        straight_horn(11.5 - 7 / 2);
     rotate([0, 0, -90])            
-        straight_horn();            
+        straight_horn(12 - 7 / 2); 
 }
 
 module cross_horn_imprint() {
@@ -803,10 +1077,10 @@ module cross_horn_imprint() {
     horn_depth = 2;
     hole_d = 1;
     hole_separation = 2;
-    screw_r = 2;
+    screw_d = 2;
     clearance = 0;
     difference() {
-        cube([total_horn_len + horn_crown_d, 17.5, 5], center = true);
+        cube([total_horn_len + horn_crown_d, 20, 5], center = true);
         translate([0, 0, 3])
             rotate([180, 0, 0])
                 cross_horn();
@@ -818,7 +1092,7 @@ module cross_horn_imprint() {
 
 // ========== ASSEMBLY ========== //
 *single_horn();
-*single_horn_imprint();
+single_horn_imprint();
 
 *double_horn();
 *double_horn_imprint();
