@@ -366,8 +366,8 @@ module single_horn() {
     hole_separation = 2;
     screw_d = 2;
     screw_l = 20;
-
     clearance = 0;
+    
     m = (horn_min_width - horn_max_width) / (2 * center_to_last);
     b = horn_crown_d + clearance;
     
