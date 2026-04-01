@@ -112,9 +112,6 @@ module horn_base(
     clearance
 ) {
     center_to_end = total_horn_len - horn_crown_d / 2;
-    echo(total_horn_len);
-    echo(center_to_end);
-
     center_to_last = len_to_last - horn_crown_d / 2;
 
     m = (horn_min_width - horn_max_width) / (2 * min_max_dist);
