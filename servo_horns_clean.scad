@@ -1,3 +1,10 @@
+/* 
+Project Name: Servo Horn Molds
+Author: Alan Gindi
+Date: 4/1/2026
+License: MIT
+*/
+
 // ========== IMPORTS ========== //
 
 
@@ -115,7 +122,7 @@ module horn_base(
     center_to_last = len_to_last - horn_crown_d / 2;
 
     m = (horn_min_width - horn_max_width) / (2 * min_max_dist);
-    b = horn_min_width - 2 * m * center_to_last;
+    b = horn_min_width - 2 * m * center_to_last + clearance;
     
     top_slope = [
         for (x = [0 : center_to_end]) [x, m*x + b / 2], 
@@ -420,9 +427,12 @@ module cross_horn_imprint() {
 
 
 // ========== ASSEMBLY ========== //
+// Uncomment the lines below to preview the imprints
+/*
 translate([0, 25, 0])
     single_horn_imprint();
 translate([0, 0, 0])
     double_horn_imprint();
 translate([0, -25, 0])    
     cross_horn_imprint(); 
+*/
