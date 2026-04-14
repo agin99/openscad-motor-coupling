@@ -1,5 +1,9 @@
 $fn = 100;
 
+nema_14_shaft_d = 5;
+nema_17_shaft_d = 5;
+nema_23_shaft_d = 8;
+
 module nut(
     side_length
 ) {
@@ -27,7 +31,7 @@ module clamping_hub(
             translate([od / 2, 0, 0])
                 cube([screw_d * 3, screw_d * 2.5, clamp_thickness], center = true);
         }
-        cylinder(d = id, h = clamp_thickness + 1, center = true); //shaft_bore
+        cylinder(d = id, h = 100, center = true); //shaft_bore
 
         translate([od / 2, 0, 0]) 
             rotate([90, 0, 0])
@@ -35,23 +39,25 @@ module clamping_hub(
         translate([od / 2, screw_l / 2 + 2.5, 0]) 
             rotate([90, 0, 0])
                 linear_extrude(screw_l / 2)
-                    nut(3); //nut trap
+                    nut(screw_d); //nut trap
         
         translate([od / 2, 0, 0]) 
             rotate([0, 0, 90])
-                cube([slit_width, od / 2 + screw_d, clamp_thickness + 1], center = true); //slit
+                cube([slit_width, od / 2 + screw_d, clamp_thickness], center = true); //slit
+
+        translate([od / 2, 0, -clamp_thickness / 2 + 0.5])
+            cube([screw_d * 3, screw_d * 3, 1], center = true);
     }
 }
 
-id = 5; 
 od = 15; 
 clamp_thickness = 10;
 slit_width = 1;
 screw_d = 3;
 screw_l = 20;
 
-clamping_hub(
-    id, 
+*clamping_hub(
+    nema_23_shaft_d, 
     od, 
     clamp_thickness,
     slit_width, 
