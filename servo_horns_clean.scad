@@ -139,7 +139,12 @@ module horn_base(
 
     for (i = [hole_count - 2: -2 : 0]) {
         translate([center_to_last - i * hole_separation, 0, 0])
-            cylinder(d = hole_d, h = screw_l, center = true);
+            hull() {
+                translate([-0.5, 0, 0])
+                    cylinder(d = hole_d, h = screw_l, center = true);
+                translate([0.5, 0, 0])
+                    cylinder(d = hole_d, h = screw_l, center = true);
+            }
     }
     cylinder(d = horn_crown_d, h = screw_l, center = true);
 }
@@ -428,11 +433,9 @@ module cross_horn_imprint() {
 
 // ========== ASSEMBLY ========== //
 // Uncomment the lines below to preview the imprints
-/*
 translate([0, 25, 0])
     single_horn_imprint();
 translate([0, 0, 0])
     double_horn_imprint();
 translate([0, -25, 0])    
     cross_horn_imprint(); 
-*/
