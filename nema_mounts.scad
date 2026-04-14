@@ -87,8 +87,7 @@ module nema_test_stand(
     size,
     mod_val,
     z1, 
-    z2,
-    shaft_d
+    z2
 ) {
     info = nema_motor_info(size);
     motor_width = info[0];
@@ -163,9 +162,9 @@ module nema_test_stand(
                         ]);
         }
 
-        //698 ball bearing
+        //Ball bearing id: 5mm, od 14mm
         translate([0, center_distance, 0])
-            cylinder(d = 19, h = 100, center = true);
+            cylinder(d = 14, h = 100, center = true);
     }
 }
 
@@ -173,8 +172,7 @@ module nema_test_stand(
     23,
     2,
     24,
-    24,
-    5.1
+    24
 );
 
 nema_gusset_l_mount(14);

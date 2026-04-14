@@ -25,13 +25,14 @@ module clamping_hub(
     screw_d,
     screw_l
 ) {
+    clearance = 0.2;
     difference() {
         union() {
             cylinder(d = od, h = clamp_thickness, center = true);
             translate([od / 2, 0, 0])
                 cube([screw_d * 3, screw_d * 2.5, clamp_thickness], center = true);
         }
-        cylinder(d = id, h = 100, center = true); //shaft_bore
+        cylinder(d = id + clearance, h = 100, center = true); //shaft_bore
 
         translate([od / 2, 0, 0]) 
             rotate([90, 0, 0])
@@ -56,8 +57,8 @@ slit_width = 1;
 screw_d = 3;
 screw_l = 20;
 
-*clamping_hub(
-    nema_23_shaft_d, 
+clamping_hub(
+    nema_23_shaft_d,
     od, 
     clamp_thickness,
     slit_width, 
