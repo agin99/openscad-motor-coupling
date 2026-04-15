@@ -153,30 +153,42 @@ module adjacent_idle_mounts(
     motor_width = info[0];
     plinth_height = info[1];
 
-    echo(len(positions));
+    nema_mount_width = motor_width + gusset_side;
+    nema_mount_depth = motor_width + 2 * gusset_width;
+    nema_mount_height = plinth_height * 2;
+    nema_mount = [nema_mount_width, nema_mount_depth, nema_mount_height];
+
+    idle_mount_width = nema_mount.x;
+    idle_mount_depth = ball_bearing_od * 2; 
+    idle_mount_height = nema_mount.z; 
+    idle_mount = [idle_mount_width, idle_mount_depth, idle_mount_height];
+
     for(i = [0 : len(positions) - 1]) {
         center_distance = distances[i];
-        gap_size = center_distance - ball_bearing_od * 2;
-        center_pos = positions[i] - center_distance / 2;
+        gap_size = i == 0 ? center_distance - (idle_mount.y + nema_mount.y) / 2 : center_distance - idle_mount.y / 2;
+        center_pos = i == 0 ? (nema_mount.y + gap_size) / 2 : positions[i] - center_distance / 2;
 
-        echo(i, positions[i], distances[i], gap_size, center_pos);
+        gap_panel_width = nema_mount.x;
+        gap_panel_depth = gap_size;
+        gap_panel_height = nema_mount.z;
+        gap_panel = [gap_panel_width, gap_panel_depth, gap_panel_height];
 
         translate([0, positions[i], 0])
-                idle_gusset_l_mount(size);
+            idle_gusset_l_mount(size);
 
         translate([
             gusset_side / 2, 
             center_pos, 
-            plinth_height
+            nema_mount.z / 2
         ])
-            cube([motor_width + gusset_side, gap_size, plinth_height * 2], center = true);
+            cube(gap_panel, center = true);
         translate([
-            motor_width / 2 + gusset_side + plinth_height, 
-            center_pos, 
-            (motor_width + gusset_side) / 2
+            (nema_mount.x + nema_mount.z + gusset_side) / 2, 
+            center_pos,
+            nema_mount.x / 2
         ])
             rotate([0, 90, 0])
-                cube([motor_width + gusset_side, gap_size, plinth_height * 2], center = true);
+                cube(gap_panel, center = true);
     }
 }
 
@@ -189,16 +201,19 @@ module gear_test_stand(
     motor_width = info[0];
     plinth_height = info[1];
 
-    center_distance = ((z_list[0] + z_list[1]) * mod_val) / 2;
-    gap_size = center_distance - (motor_width + 2 * gusset_width) / 2 - ball_bearing_od;
+    nema_mount_width = motor_width + gusset_side;
+    nema_mount_depth = motor_width + 2 * gusset_width;
+    nema_mount_height = plinth_height * 2;
+    nema_mount = [nema_mount_width, nema_mount_depth, nema_mount_height];
 
-    average_center = (motor_width + 2 * gusset_width) / 2 + gap_size / 2;
-    nema_gusset_l_mount(size);
-    translate([gusset_side / 2, average_center, plinth_height])
-        cube([motor_width + gusset_side, gap_size, plinth_height * 2], center = true);
-    translate([motor_width / 2 + gusset_side + plinth_height, average_center, motor_width / 2 + gusset_side / 2])
-        rotate([0, 90, 0])
-            cube([motor_width + gusset_side, gap_size, plinth_height * 2], center = true);
+    idle_mount_width = nema_mount.x;
+    idle_mount_depth = ball_bearing_od * 2; 
+    idle_mount_height = nema_mount.z; 
+    idle_mount = [idle_mount_width, idle_mount_depth, idle_mount_height];
+
+    center_distance = ((z_list[0] + z_list[1]) * mod_val) / 2;
+    gap_size = center_distance - (nema_mount.y + idle_mount.y) / 2;
+    average_center = (nema_mount.y + gap_size) / 2;
 
     assert(len(z_list) >= 2, "Invalid test stand input");
     distance_list = [
@@ -206,22 +221,69 @@ module gear_test_stand(
     ];
     position_list = cumsum(distance_list);
 
-    translate([0, 0, 0]);
-        adjacent_idle_mounts(
-            size,
-            distance_list,
-            position_list
-        );
+    nema_gusset_l_mount(size);
+    adjacent_idle_mounts(
+        size,
+        distance_list,
+        position_list
+    );
 }
 
-nema_gusset_l_mount(14);
+module pulley_gear_test_stand(
+    size,
+    distances,
+    positions
+) {
+    info = nema_motor_info(size);
+    motor_width = info[0];
+    plinth_height = info[1];
+
+    nema_mount_width = motor_width + gusset_side;
+    nema_mount_depth = motor_width + 2 * gusset_width;
+    nema_mount_height = plinth_height * 2;
+    nema_mount = [nema_mount_width, nema_mount_depth, nema_mount_height];
+
+    idle_mount_width = nema_mount.x;
+    idle_mount_depth = ball_bearing_od * 2; 
+    idle_mount_height = nema_mount.z; 
+    idle_mount = [idle_mount_width, idle_mount_depth, idle_mount_height];
+
+    center_distance = distances[0];
+    gap_size = center_distance - (nema_mount.y + idle_mount.y) / 2;
+    average_center = (nema_mount.y + gap_size) / 2;
+
+    gap_panel_width = nema_mount.x;
+    gap_panel_depth = gap_size;
+    gap_panel_height = nema_mount.z;
+    gap_panel = [gap_panel_width, gap_panel_depth, gap_panel_height];
+
+    nema_gusset_l_mount(size);
+    adjacent_idle_mounts(
+        size,
+        distances,
+        positions
+    );
+}
 
 size = 14; 
 mod = 2;
-z = [24, 26, 24, 31];
+z = [24, 24];
 
-gear_test_stand(
+// nema_gusset_l_mount(size);
+!gear_test_stand(
     size,
     mod,
     z
+);
+
+pulley_r = 6.4; 
+pulley_ratio = 180;
+pulley_belt_l = (pulley_ratio * PI / 180) * pulley_r;
+distances = [(220 - 2 * pulley_belt_l) / 2, (24 + 24) * mod / 2];
+positions = cumsum(distances);
+
+!pulley_gear_test_stand(
+    size,
+    distances,
+    positions
 );

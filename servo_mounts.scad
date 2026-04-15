@@ -247,8 +247,8 @@ module servo_test_stand(
 }
 
 // ========== ASSEMBLY ========== //
-*mg90s_mount_base();
-!servo_test_stand(
+!mg90s_mount_base();
+servo_test_stand(
     2,
     24,
     24
