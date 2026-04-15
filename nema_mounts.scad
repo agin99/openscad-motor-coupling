@@ -40,6 +40,58 @@ module gusset(side_length, width) {
     SHAFT_DIAM:     The diameter of the motor shaft.
 */
 
+// size represents the characteristic NEMA of the setup which will determine dimensions of the rest.
+module idle_gusset_l_mount(size) {
+    info = nema_motor_info(size);
+    motor_width = info[0];
+    plinth_height = info[1];
+
+    translate([gusset_side / 2, 0, plinth_height])
+        cube([motor_width + gusset_side, 0, plinth_height * 2], center = true);
+    translate([motor_width / 2 + gusset_side + plinth_height, 0, motor_width / 2 + gusset_side / 2])
+        rotate([0, 90, 0])
+            cube([motor_width + gusset_side, 0, plinth_height * 2], center = true);
+    difference() {
+        translate([0, 0, 0]) {
+            union() {
+                translate([0, 0, plinth_height])
+                    difference() {
+                        translate([gusset_side / 2, 0, 0])
+                        cube([
+                            motor_width + gusset_side, 
+                            ball_bearing_od * 2, 
+                            plinth_height * 2
+                        ], center=true);
+                    }
+
+                translate([
+                    motor_width / 2 + gusset_side + plinth_height, 
+                    0, 
+                    motor_width / 2 + gusset_side / 2
+                ])
+                    rotate([0, 90, 0])
+                        difference() {
+                            cube([
+                                motor_width + gusset_side, 
+                                ball_bearing_od * 2, 
+                                plinth_height * 2
+                            ], center=true);
+                        }
+            }
+            translate([(motor_width / 2 + gusset_side), -(ball_bearing_od), plinth_height * 2])
+                rotate([90, 0, 180])
+                    gusset(gusset_side, gusset_width);
+
+            translate([(motor_width / 2 + gusset_side), ball_bearing_od - gusset_width, plinth_height * 2])
+                rotate([90, 0, 180])
+                    gusset(gusset_side, gusset_width);
+        }
+
+        translate([0, 0, 0])
+            cylinder(d = ball_bearing_od, h = 100, center = true);
+    }
+}
+
 module nema_gusset_l_mount(size) {
     info = nema_motor_info(size);
     motor_width = info[0];
@@ -88,75 +140,82 @@ module nema_gusset_l_mount(size) {
             gusset(gusset_side, gusset_width);
 }
 
-module nema_test_stand(
+module adjacent_idle_mounts(
     size,
-    mod_val,
-    z1, 
-    z2
+    distances,
+    positions
 ) {
     info = nema_motor_info(size);
     motor_width = info[0];
     plinth_height = info[1];
 
-    center_distance = ((z1 + z2) * mod_val) / 2;
+    for(i = [0 : len(positions) - 1]) {
+        center_distance = distances[i];
+        gap_size = center_distance - ball_bearing_od * 2;
+        center_pos = positions[i] + center_distance / 2;
+
+        translate([0, positions[i], 0])
+            idle_gusset_l_mount(size);
+
+        if(i != len(positions) - 1) {
+            translate([
+                gusset_side / 2, 
+                center_pos, 
+                plinth_height
+            ])
+                cube([motor_width + gusset_side, gap_size, plinth_height * 2], center = true);
+            translate([
+                motor_width / 2 + gusset_side + plinth_height, 
+                center_pos, 
+                (motor_width + gusset_side) / 2
+            ])
+                rotate([0, 90, 0])
+                    cube([motor_width + gusset_side, gap_size, plinth_height * 2], center = true);
+        }
+    }
+}
+
+module sequential_test_stand(
+    size,
+    mod_val,
+    z_list
+) { 
+    info = nema_motor_info(size);
+    motor_width = info[0];
+    plinth_height = info[1];
+
+    center_distance = ((z_list[0] + z_list[1]) * mod_val) / 2;
     gap_size = center_distance - (motor_width + 2 * gusset_width) / 2 - ball_bearing_od;
 
     average_center = (motor_width + 2 * gusset_width) / 2 + gap_size / 2;
-
     nema_gusset_l_mount(size);
-
     translate([gusset_side / 2, average_center, plinth_height])
         cube([motor_width + gusset_side, gap_size, plinth_height * 2], center = true);
     translate([motor_width / 2 + gusset_side + plinth_height, average_center, motor_width / 2 + gusset_side / 2])
         rotate([0, 90, 0])
             cube([motor_width + gusset_side, gap_size, plinth_height * 2], center = true);
-    difference() {
-        translate([0, center_distance, 0]) {
-            union() {
-                translate([0, 0, plinth_height])
-                    difference() {
-                        translate([gusset_side / 2, 0, 0])
-                        cube([
-                            motor_width + gusset_side, 
-                            ball_bearing_od * 2, 
-                            plinth_height * 2
-                        ], center=true);
-                    }
 
-                translate([
-                    motor_width / 2 + gusset_side + plinth_height, 
-                    0, 
-                    motor_width / 2 + gusset_side / 2
-                ])
-                    rotate([0, 90, 0])
-                        difference() {
-                            cube([
-                                motor_width + gusset_side, 
-                                ball_bearing_od * 2, 
-                                plinth_height * 2
-                            ], center=true);
-                        }
-            }
-            translate([(motor_width / 2 + gusset_side), -(ball_bearing_od), plinth_height * 2])
-                rotate([90, 0, 180])
-                    gusset(gusset_side, gusset_width);
-
-            translate([(motor_width / 2 + gusset_side), ball_bearing_od - gusset_width, plinth_height * 2])
-                rotate([90, 0, 180])
-                    gusset(gusset_side, gusset_width);
-        }
-
-        //Ball bearing id: 5mm, od 14mm
-        translate([0, center_distance, 0])
-            cylinder(d = ball_bearing_od, h = 100, center = true);
-    }
+    assert(len(z_list) >= 2, "Invalid test stand input");
+    distance_list = [
+        for(i = [0 : len(z_list) - 2]) (z_list[i] + z_list[i + 1]) * mod_val / 2
+    ];
+    position_list = cumsum(distance_list);
+    translate([0, 0, 0]);
+        adjacent_idle_mounts(
+            size,
+            distance_list,
+            position_list
+        );
 }
 
-!nema_test_stand(
-    23,
-    2,
-    24,
-    24
-);
-
 nema_gusset_l_mount(14);
+
+size = 14; 
+mod = 2;
+z = [24, 24, 24];
+
+!sequential_test_stand(
+    size,
+    mod,
+    z
+);
