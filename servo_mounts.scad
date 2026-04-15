@@ -3,8 +3,7 @@ use <clamping_hub.scad>;
 
 $fn = 100;
 
-// TODO: Add gussets
-// TODO: Standardize and parameterize
+// ========== CONSTANTS ========== //
 
 /* Micro Servo MG90S Dimensions:
     > total_height: 33mm
@@ -27,6 +26,46 @@ $fn = 100;
     > spline_height:    3
     > spline_diam:      5
 */
+
+servo_base_width =    23; //Measured
+servo_base_depth =    12.5;
+servo_base_height =   23; //Measured
+servo_base = [servo_base_width, servo_base_depth, servo_base_height];
+
+wing_buff =     5;
+function buff(size) = size + wing_buff;
+wing_width =    buff(33);
+wing_depth =    buff(12.5);
+wing_height =   buff(3);
+wing = [wing_width, wing_depth, wing_height];
+
+wing_screw_dist =       27.7;
+base_bottom_to_wing =   18;
+
+screw_d =   2;
+screw_l =   20; 
+screw = [screw_d, screw_l];
+
+plinth_width =  15;
+plinth_depth =  12.5;
+plinth_height = 10;
+plinth = [plinth_width, plinth_depth, plinth_height];
+
+support_base_width = wing.x;
+support_base_depth = servo_base.z + 5; 
+support_base_height = 5;
+support_base = [support_base_width, support_base_depth, support_base_height];
+
+support_col_width =   (wing.x - servo_base.x) / 2;
+support_col_depth =   wing.z;
+support_col_height =  0;
+support_col = [support_col_width, support_col_depth, support_col_height];
+
+mount_screw_d =     3;
+mount_screw_l =     20;
+mount_screw_dist =  6;
+
+// ========== STRUCTURES ========== //
 
 module tolerant_screw_hole(separation, d, l) {
     hull() {
@@ -60,49 +99,6 @@ module gusset(side_length, width) {
 }
 
 module mg90s_mount_base() {
-    buff_val =      5;
-    total_height =  33;
-
-    servo_base_width =    23; //Measured
-    servo_base_depth =    12.5;
-    servo_base_height =   23; //Measured
-    servo_base = [servo_base_width, servo_base_depth, servo_base_height];
-
-    wing_buff =     5;
-    function buff(size) = size + wing_buff;
-    wing_width =    buff(33);
-    wing_depth =    buff(12.5);
-    wing_height =   buff(3);
-    wing = [wing_width, wing_depth, wing_height];
-
-    wing_screw_dist =   27.7;
-
-    screw_d =   2;
-    screw_l =   20; 
-    screw = [screw_d, screw_l];
-
-    plinth_width =  15;
-    plinth_depth =  12.5;
-    plinth_height = 10;
-    
-    spline_diam =   5;
-    spline_height = 3; 
-    spline = [spline_diam, spline_height];
-
-    support_base_width = wing.x;
-    support_base_depth = servo_base.z + 5; 
-    support_base_height = 5;
-    support_base = [support_base_width, support_base_depth, support_base_height];
-
-    support_col_width =   (wing.x - servo_base.x) / 2;
-    support_col_depth =   wing.z;
-    support_col_height =  0;
-    support_col = [support_col_width, support_col_depth, support_col_height];
-
-    mount_screw_d =     3;
-    mount_screw_l =     20;
-    mount_screw_dist =  6;
-
     nut_thickness = 1;
     nut_dist =      2;
 
@@ -149,56 +145,8 @@ module servo_test_stand(
     z1, 
     z2
 ) {
-    buff_val =      5;
-    total_height =  33;
-
-    servo_base_width =    23; //Measured
-    servo_base_depth =    12.5;
-    servo_base_height =   23; //Measured
-    servo_base = [servo_base_width, servo_base_depth, servo_base_height];
-
-    wing_buff =     5;
-    function buff(size) = size + wing_buff;
-    wing_width =    buff(33);
-    wing_depth =    buff(12.5);
-    wing_height =   buff(3);
-    wing = [wing_width, wing_depth, wing_height];
-
-    base_bottom_to_wing =    18;
-    wing_screw_dist =   27.7;
-
-    screw_d =   2;
-    screw_l =   20; 
-    screw = [screw_d, screw_l];
-
-    plinth_width =  15;
-    plinth_depth =  12.5; // Effective radius used to create plinth
-    plinth_height = 10;
-    plinth = [plinth_width, plinth_depth, plinth_height];
-    
-    spline_diam =   5;
-    spline_height = 3; 
-    spline = [spline_diam, spline_height];
-
-    support_base_width = wing.x;
-    support_base_depth = servo_base.z + 5; 
-    support_base_height = 5;
-    support_base = [support_base_width, support_base_depth, support_base_height];
-
-    support_col_width =   (wing.x - servo_base.x) / 2;
-    support_col_depth =   wing.z;
-    support_col_height =  0;
-    support_col = [support_col_width, support_col_depth, support_col_height];
-
-    mount_screw_d =     3;
-    mount_screw_l =     20;
-    mount_screw_dist =  6;
-
-    nut_thickness = 1;
-    nut_dist =      2; 
-
-    gusset_side_l =     15;
-    gusset_width =  3;
+    gusset_side_l = 15;
+    gusset_width =  5;
 
     center_distance = ((z1 + z2) * mod_val) / 2; // Measured from servo shaft
     edge_to_servo_shaft = support_base.z + servo_base.y / 2;
@@ -298,6 +246,7 @@ module servo_test_stand(
             gusset(gusset_side_l, gusset_width);
 }
 
+// ========== ASSEMBLY ========== //
 *mg90s_mount_base();
 !servo_test_stand(
     2,
