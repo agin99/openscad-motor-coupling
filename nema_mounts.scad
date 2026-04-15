@@ -10,6 +10,10 @@ gusset_side = 15;
 mount_screw_d = 4;
 ball_bearing_od = 14;
 
+// ========== LOGIC ========== //
+
+function belt_l_to_z(mod_val, l, adj_gear_z) = 2 * l / mod_val - adj_gear_z;
+
 // ========== STRUCTURES ========== //
 
 module tolerant_screw_hole(separation, d, l) {
@@ -149,33 +153,34 @@ module adjacent_idle_mounts(
     motor_width = info[0];
     plinth_height = info[1];
 
+    echo(len(positions));
     for(i = [0 : len(positions) - 1]) {
         center_distance = distances[i];
         gap_size = center_distance - ball_bearing_od * 2;
-        center_pos = positions[i] + center_distance / 2;
+        center_pos = positions[i] - center_distance / 2;
+
+        echo(i, positions[i], distances[i], gap_size, center_pos);
 
         translate([0, positions[i], 0])
-            idle_gusset_l_mount(size);
+                idle_gusset_l_mount(size);
 
-        if(i != len(positions) - 1) {
-            translate([
-                gusset_side / 2, 
-                center_pos, 
-                plinth_height
-            ])
+        translate([
+            gusset_side / 2, 
+            center_pos, 
+            plinth_height
+        ])
+            cube([motor_width + gusset_side, gap_size, plinth_height * 2], center = true);
+        translate([
+            motor_width / 2 + gusset_side + plinth_height, 
+            center_pos, 
+            (motor_width + gusset_side) / 2
+        ])
+            rotate([0, 90, 0])
                 cube([motor_width + gusset_side, gap_size, plinth_height * 2], center = true);
-            translate([
-                motor_width / 2 + gusset_side + plinth_height, 
-                center_pos, 
-                (motor_width + gusset_side) / 2
-            ])
-                rotate([0, 90, 0])
-                    cube([motor_width + gusset_side, gap_size, plinth_height * 2], center = true);
-        }
     }
 }
 
-module sequential_test_stand(
+module gear_test_stand(
     size,
     mod_val,
     z_list
@@ -200,6 +205,7 @@ module sequential_test_stand(
         for(i = [0 : len(z_list) - 2]) (z_list[i] + z_list[i + 1]) * mod_val / 2
     ];
     position_list = cumsum(distance_list);
+
     translate([0, 0, 0]);
         adjacent_idle_mounts(
             size,
@@ -212,9 +218,9 @@ nema_gusset_l_mount(14);
 
 size = 14; 
 mod = 2;
-z = [24, 24, 24];
+z = [24, 26, 24, 31];
 
-!sequential_test_stand(
+gear_test_stand(
     size,
     mod,
     z
