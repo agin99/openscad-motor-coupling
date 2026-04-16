@@ -270,7 +270,7 @@ mod = 2;
 z = [24, 24];
 
 // nema_gusset_l_mount(size);
-!gear_test_stand(
+gear_test_stand(
     size,
     mod,
     z

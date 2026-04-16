@@ -6,7 +6,7 @@ License: MIT
 */
 
 // ========== IMPORTS ========== //
-
+use <servo_mounts.scad>;
 
 // ========== GLOBAL ========== //
 $fn = 100;
@@ -116,7 +116,11 @@ module horn_base(
     hole_count, 
     hole_separation,
     screw_l,
-    clearance
+    clearance,
+    nut_trap = false, // bool 
+    nut_trap_width = 0,
+    nut_trap_height = 0,
+    screw_to_nut_trap_separation = 0
 ) {
     center_to_end = total_horn_len - horn_crown_d / 2;
     center_to_last = len_to_last - horn_crown_d / 2;
@@ -138,13 +142,15 @@ module horn_base(
     cylinder(d = b, h = horn_crown_height, center = true);
 
     for (i = [hole_count - 2: -2 : 0]) {
-        translate([center_to_last - i * hole_separation, 0, 0])
-            hull() {
-                translate([-0.5, 0, 0])
-                    cylinder(d = hole_d, h = screw_l, center = true);
-                translate([0.5, 0, 0])
-                    cylinder(d = hole_d, h = screw_l, center = true);
-            }
+        translate([center_to_last - i * hole_separation, 0, 0]) {
+            rotate([0, 0, 90])
+                tolerant_screw_hole(1, hole_d, screw_l);
+                if(nut_trap) {
+                    translate([0, 0, -screw_to_nut_trap_separation])
+                        rotate([90, 0, 90])
+                            tolerant_nut_trap(nut_trap_width, nut_trap_height, hole_d);
+                }
+        }
     }
     cylinder(d = horn_crown_d, h = screw_l, center = true);
 }
@@ -162,7 +168,11 @@ module single_horn(
     hole_count, 
     hole_separation,
     screw_l,
-    clearance
+    clearance,
+    nut_trap = false, // bool 
+    nut_trap_width = 0,
+    nut_trap_height = 0,
+    screw_to_nut_trap_separation = 0
 ) {
     horn_base(
         total_horn_len,
@@ -177,7 +187,11 @@ module single_horn(
         hole_count, 
         hole_separation,
         screw_l,
-        clearance
+        clearance,
+        nut_trap, 
+        nut_trap_width,
+        nut_trap_height,
+        screw_to_nut_trap_separation
     );
 }
 
@@ -209,7 +223,11 @@ module double_horn(
     hole_count, 
     hole_separation,
     screw_l,
-    clearance
+    clearance,
+    nut_trap = false, // bool 
+    nut_trap_width = 0,
+    nut_trap_height = 0,
+    screw_to_nut_trap_separation = 0
 ) {
     horn_base(
         (total_horn_len + horn_crown_d) / 2,
@@ -224,7 +242,11 @@ module double_horn(
         hole_count, 
         hole_separation,
         screw_l,
-        clearance
+        clearance,
+        nut_trap, 
+        nut_trap_width,
+        nut_trap_height,
+        screw_to_nut_trap_separation
     );
     rotate([0, 0, 180])
         horn_base(
@@ -240,7 +262,11 @@ module double_horn(
             hole_count, 
             hole_separation,
             screw_l,
-            clearance
+            clearance,
+            nut_trap, 
+            nut_trap_width,
+            nut_trap_height,
+            screw_to_nut_trap_separation
         );
 }
 
@@ -272,7 +298,11 @@ module cross_horn(
     str_horn_max_width,
     str_min_max_dist,
     str_hole_count,
-    str_hole_separation
+    str_hole_separation,
+    nut_trap = false, // bool 
+    nut_trap_width = 0,
+    nut_trap_height = 0,
+    screw_to_nut_trap_separation = 0
 ) {
     rotate([0, 0, 180])
         horn_base(
@@ -288,7 +318,11 @@ module cross_horn(
             fat_hole_count, 
             fat_hole_separation,
             screw_l,
-            clearance
+            clearance,
+            nut_trap, 
+            nut_trap_width,
+            nut_trap_height,
+            screw_to_nut_trap_separation
         );
 
     rotate([0, 0, 0])           
@@ -305,7 +339,11 @@ module cross_horn(
             skinny_hole_count, 
             skinny_hole_separation,
             screw_l,
-            clearance
+            clearance,
+            nut_trap, 
+            nut_trap_width,
+            nut_trap_height,
+            screw_to_nut_trap_separation
         );
 
     rotate([0, 0, 90])            
@@ -322,7 +360,11 @@ module cross_horn(
             str_hole_count, 
             str_hole_separation,
             screw_l,
-            clearance
+            clearance,
+            nut_trap, 
+            nut_trap_width,
+            nut_trap_height,
+            screw_to_nut_trap_separation
         );
     rotate([0, 0, -90])            
         horn_base(
@@ -338,7 +380,11 @@ module cross_horn(
             str_hole_count, 
             str_hole_separation,
             screw_l,
-            clearance
+            clearance,
+            nut_trap, 
+            nut_trap_width,
+            nut_trap_height,
+            screw_to_nut_trap_separation
         );
 }
 
@@ -362,7 +408,11 @@ module single_horn_imprint() {
                     single_hole_count, 
                     single_hole_separation,
                     single_screw_l,
-                    single_clearance
+                    single_clearance,
+                    nut_trap = true, // bool 
+                    nut_trap_width = 1,
+                    nut_trap_height = 5,
+                    screw_to_nut_trap_separation = -9
                 );
     }
 }
@@ -385,7 +435,11 @@ module double_horn_imprint() {
                     double_hole_count, 
                     double_hole_separation,
                     double_screw_l,
-                    double_clearance
+                    double_clearance,
+                    nut_trap = true, // bool 
+                    nut_trap_width = 1,
+                    nut_trap_height = 5,
+                    screw_to_nut_trap_separation = -9
                 );
     }
 }
@@ -423,7 +477,11 @@ module cross_horn_imprint() {
                     str_horn_max_width,
                     str_min_max_dist,
                     str_hole_count,
-                    str_hole_separation
+                    str_hole_separation,
+                    nut_trap = true, // bool 
+                    nut_trap_width = 1,
+                    nut_trap_height = 5,
+                    screw_to_nut_trap_separation = -9
                 );
     }
 }
@@ -438,4 +496,4 @@ translate([0, 25, 0])
 translate([0, 0, 0])
     double_horn_imprint();
 translate([0, -25, 0])    
-    cross_horn_imprint(); 
+    cross_horn_imprint();
