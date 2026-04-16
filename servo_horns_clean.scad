@@ -487,7 +487,101 @@ module cross_horn_imprint() {
 }
 
 // ========== BUILD ========== //
+module single_horn_mask(
+    nut_trap = false, // bool 
+    nut_trap_width = 0,
+    nut_trap_height = 0,
+    screw_to_nut_trap_separation = 0
+) {
+    single_horn(
+        single_total_horn_len,
+        single_len_to_last,
+        single_horn_crown_d,
+        single_horn_min_width,
+        single_horn_max_width,
+        single_min_max_dist,
+        single_horn_crown_height,
+        single_horn_depth,
+        single_hole_d,
+        single_hole_count, 
+        single_hole_separation,
+        single_screw_l,
+        single_clearance,
+        nut_trap = nut_trap, // bool 
+        nut_trap_width = nut_trap_width,
+        nut_trap_height = nut_trap_height,
+        screw_to_nut_trap_separation = screw_to_nut_trap_separation
+    );
+}
 
+module double_horn_mask(
+    nut_trap = false, // bool 
+    nut_trap_width = 0,
+    nut_trap_height = 0,
+    screw_to_nut_trap_separation = 0
+) {
+    double_horn(
+        double_total_horn_len,
+        double_len_to_last,
+        double_horn_crown_d,
+        double_horn_min_width,
+        double_horn_max_width,
+        double_min_max_dist,
+        double_horn_crown_height,
+        double_horn_depth,
+        double_hole_d,
+        double_hole_count, 
+        double_hole_separation,
+        double_screw_l,
+        double_clearance,
+        nut_trap = nut_trap, // bool 
+        nut_trap_width = nut_trap_width,
+        nut_trap_height = nut_trap_height,
+        screw_to_nut_trap_separation = screw_to_nut_trap_separation
+    );
+}
+
+module cross_horn_mask(
+    nut_trap = false, // bool 
+    nut_trap_width = 0,
+    nut_trap_height = 0,
+    screw_to_nut_trap_separation = 0
+) {
+    cross_horn(
+        cross_horn_crown_d,
+        cross_horn_crown_height,
+        cross_horn_depth,
+        cross_hole_d,
+        cross_screw_l,
+        cross_clearance,
+        fat_total_horn_len,
+        fat_len_to_last,
+        fat_horn_min_width,
+        fat_horn_max_width,
+        fat_min_max_dist,
+        fat_hole_count,
+        fat_hole_separation,
+        skinny_total_horn_len,
+        skinny_len_to_last,
+        skinny_horn_min_width,
+        skinny_horn_max_width,
+        skinny_min_max_dist,
+        skinny_hole_count,
+        skinny_hole_separation,
+        str_short_total_horn_len,
+        str_long_total_horn_len,
+        str_len_to_last,
+        str_horn_min_width,
+        str_horn_max_width,
+        str_min_max_dist,
+        str_hole_count,
+        str_hole_separation,
+        nut_trap = nut_trap, // bool 
+        nut_trap_width = nut_trap_width,
+        nut_trap_height = nut_trap_height,
+        screw_to_nut_trap_separation = screw_to_nut_trap_separation
+    );
+}
 
 // ========== ASSEMBLY ========== //
 // Uncomment the lines below to preview the imprints
